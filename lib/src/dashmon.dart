@@ -1,6 +1,10 @@
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:watcher/watcher.dart';
+
+import 'device_selection.dart';
+
 class Dashmon {
   late Process _process;
   final List<String> args;
@@ -44,14 +48,7 @@ class Dashmon {
   }
 
   void _processLine(String line) {
-    if (line.contains('More than one device connected')) {
-      _print(
-          "Dashmon found multiple devices, device choosing menu isn't supported yet, please use the -d argument");
-      _process.kill();
-      exit(1);
-    } else {
-      _print(line);
-    }
+    _print(line);
   }
 
   void _processError(String line) {
@@ -59,6 +56,20 @@ class Dashmon {
   }
 
   Future<void> start() async {
+    final devices = await getDevices(useFvm: _isFvm);
+
+    if (devices.length > 1) {
+      final selectedDevice = await selectDevice(devices);
+
+      if (selectedDevice == null) {
+        print('No device selected.');
+        exit(1);
+      }
+
+      _proxiedArgs.add('-d');
+      _proxiedArgs.add(selectedDevice.id);
+    }
+
     _process = await (_isFvm
         ? Process.start(
             'fvm', ['flutter', _isAttach ? 'attach' : 'run', ..._proxiedArgs])
@@ -69,10 +80,9 @@ class Dashmon {
 
     _process.stderr.transform(utf8.decoder).forEach(_processError);
 
-    final currentDir = File('.');
-
-    currentDir.watch(recursive: true).listen((event) {
-      if (event.path.startsWith('./lib')) {
+    final watcher = DirectoryWatcher('./lib');
+    watcher.events.listen((event) {
+      if (event.path.endsWith('.dart')) {
         if (_throttler == null) {
           _throttler = _runUpdate();
           _throttler?.then((_) {
