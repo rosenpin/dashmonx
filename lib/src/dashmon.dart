@@ -140,7 +140,14 @@ class Dashmon {
 
     stdin.lineMode = false;
     stdin.echoMode = false;
-    stdin.transform(utf8.decoder).forEach(_process.stdin.write);
+    stdin.transform(utf8.decoder).listen((input) {
+      if (input == 'c') {
+        // Clear terminal screen
+        stdout.write('\x1B[2J\x1B[H');
+      } else {
+        _process.stdin.write(input);
+      }
+    });
     final exitCode = await _process.exitCode;
     exit(exitCode);
   }

@@ -21,6 +21,12 @@ Examples:
   dashmon attach                Attach to running app
   dashmon --watch=./test        Also watch test directory
 
+Keyboard shortcuts:
+  r    Hot reload (handled by Flutter)
+  R    Hot restart (handled by Flutter)
+  c    Clear terminal screen
+  q    Quit
+
 All other arguments are passed directly to flutter run/attach.
 ''';
 
