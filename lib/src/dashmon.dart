@@ -118,10 +118,21 @@ class Dashmon {
       });
     }
 
+    // Handle graceful shutdown
+    ProcessSignal.sigint.watch().listen((_) => _shutdown());
+    if (!Platform.isWindows) {
+      ProcessSignal.sigterm.watch().listen((_) => _shutdown());
+    }
+
     stdin.lineMode = false;
     stdin.echoMode = false;
     stdin.transform(utf8.decoder).forEach(_process.stdin.write);
     final exitCode = await _process.exitCode;
     exit(exitCode);
+  }
+
+  void _shutdown() {
+    _process.kill();
+    exit(0);
   }
 }
