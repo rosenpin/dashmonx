@@ -78,6 +78,8 @@ class Dashmon {
 
         _proxiedArgs.add('-d');
         _proxiedArgs.add(selectedDevice.id);
+      } else if (devices.length == 1) {
+        print('Using ${devices[0].name} (${devices[0].id})');
       }
     }
 
