@@ -59,23 +59,30 @@ Future<Device?> selectDevice(List<Device> devices) async {
 
   stdout.write('Please choose one (or "q" to quit): ');
 
-  // Read single keystroke without requiring Enter
-  stdin.echoMode = false;
-  stdin.lineMode = false;
+  String input;
 
-  final char = String.fromCharCode(stdin.readByteSync());
+  if (devices.length <= 9) {
+    // Single keystroke for 9 or fewer devices
+    stdin.echoMode = false;
+    stdin.lineMode = false;
 
-  // Restore terminal settings
-  stdin.lineMode = true;
-  stdin.echoMode = true;
+    input = String.fromCharCode(stdin.readByteSync());
 
-  print(char); // Echo the character
+    // Restore terminal settings
+    stdin.lineMode = true;
+    stdin.echoMode = true;
 
-  if (char.toLowerCase() == 'q') {
+    print(input); // Echo the character
+  } else {
+    // Require Enter for more than 9 devices
+    input = stdin.readLineSync() ?? '';
+  }
+
+  if (input.toLowerCase() == 'q') {
     return null;
   }
 
-  final index = int.tryParse(char);
+  final index = int.tryParse(input);
   if (index == null || index < 1 || index > devices.length) {
     print('Invalid selection.');
     return null;
