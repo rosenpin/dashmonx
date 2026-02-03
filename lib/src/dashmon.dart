@@ -12,6 +12,7 @@ class Dashmon {
   Future? _throttler;
 
   final List<String> _proxiedArgs = [];
+  final List<String> _watchDirs = ['./lib'];
   bool _isFvm = false;
   bool _isAttach = false;
   bool _hasDeviceArg = false;
@@ -31,6 +32,15 @@ class Dashmon {
 
       if (arg == 'attach') {
         _isAttach = true;
+        continue;
+      }
+
+      // Parse --watch=<dir> for additional directories to watch
+      if (arg.startsWith('--watch=')) {
+        final dir = arg.substring('--watch='.length);
+        if (dir.isNotEmpty) {
+          _watchDirs.add(dir);
+        }
         continue;
       }
 
@@ -93,18 +103,20 @@ class Dashmon {
 
     _process.stderr.transform(utf8.decoder).forEach(_processError);
 
-    final watcher = DirectoryWatcher('./lib');
-    watcher.events.listen((event) {
-      if (event.path.endsWith('.dart')) {
-        if (_throttler == null) {
-          _throttler = _runUpdate();
-          _throttler?.then((_) {
-            print('Sent reload request...');
-            _throttler = null;
-          });
+    for (final dir in _watchDirs) {
+      final watcher = DirectoryWatcher(dir);
+      watcher.events.listen((event) {
+        if (event.path.endsWith('.dart')) {
+          if (_throttler == null) {
+            _throttler = _runUpdate();
+            _throttler?.then((_) {
+              print('Sent reload request...');
+              _throttler = null;
+            });
+          }
         }
-      }
-    });
+      });
+    }
 
     stdin.lineMode = false;
     stdin.echoMode = false;

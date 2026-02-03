@@ -12,12 +12,14 @@ Options:
   -h, --help       Show this help message
   -v, --version    Show version number
   --fvm            Use FVM (Flutter Version Manager)
+  --watch=<dir>    Watch additional directory (can be used multiple times)
 
 Examples:
-  dashmon                    Run with auto hot reload
-  dashmon -d emulator-5555   Run on specific device
-  dashmon --fvm              Run using FVM
-  dashmon attach             Attach to running app
+  dashmon                       Run with auto hot reload
+  dashmon -d emulator-5555      Run on specific device
+  dashmon --fvm                 Run using FVM
+  dashmon attach                Attach to running app
+  dashmon --watch=./test        Also watch test directory
 
 All other arguments are passed directly to flutter run/attach.
 ''';
