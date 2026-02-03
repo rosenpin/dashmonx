@@ -1,4 +1,4 @@
-library dashmon;
+library dashmonx;
 
 export './src/dashmon.dart';
 export './src/device_selection.dart';

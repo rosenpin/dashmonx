@@ -1,12 +1,12 @@
-import 'package:dashmon/dashmon.dart';
+import 'package:dashmonx/dashmonx.dart';
 
-const version = '0.0.3';
+const version = '1.0.0';
 
 const helpText = '''
-Dashmon - Auto hot reload for Flutter applications
+Dashmonx - Auto hot reload for Flutter applications
 
-Usage: dashmon [options] [flutter-run-args]
-       dashmon attach [options] [flutter-attach-args]
+Usage: dashmonx [options] [flutter-run-args]
+       dashmonx attach [options] [flutter-attach-args]
 
 Options:
   -h, --help       Show this help message
@@ -15,11 +15,11 @@ Options:
   --watch=<dir>    Watch additional directory (can be used multiple times)
 
 Examples:
-  dashmon                       Run with auto hot reload
-  dashmon -d emulator-5555      Run on specific device
-  dashmon --fvm                 Run using FVM
-  dashmon attach                Attach to running app
-  dashmon --watch=./test        Also watch test directory
+  dashmonx                       Run with auto hot reload
+  dashmonx -d emulator-5555      Run on specific device
+  dashmonx --fvm                 Run using FVM
+  dashmonx attach                Attach to running app
+  dashmonx --watch=./test        Also watch test directory
 
 Keyboard shortcuts:
   r    Hot reload (handled by Flutter)
@@ -37,11 +37,11 @@ void main(List<String> args) {
   }
 
   if (args.contains('-v') || args.contains('--version')) {
-    print('dashmon $version');
+    print('dashmonx $version');
     return;
   }
 
-  print('Starting Dashmon...');
+  print('Starting Dashmonx...');
   final dashmon = Dashmon(args);
   dashmon.start();
 }

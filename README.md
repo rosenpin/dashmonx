@@ -1,42 +1,72 @@
-# Dashmon
+# Dashmonx
 
-A minimalistic CLI tool to run Flutter applications and auto hot reload it when files are changed. It will watch changes your application code and trigger a hot reload everytime a change happens.
+[![Pub Version](https://img.shields.io/pub/v/dashmonx)](https://pub.dev/packages/dashmonx)
+
+A CLI tool to run Flutter applications with automatic hot reload on file changes. Fork of [dashmon](https://github.com/erickzanardo/dashmon) with additional features.
 
 ## Install
 
 ```
-$ flutter pub global activate dashmon
+$ dart pub global activate dashmonx
 ```
 
-## Running
+## Usage
 
-To run dashmon, just change the `flutter run` command to `dashmon`:
-
-```
-$ dashmon
-```
-
-All arguments passed to it will be proxied to the `flutter run` command, so if you want to run on a specific device, the following command can be used:
+Just replace `flutter run` with `dashmonx`:
 
 ```
-$ dashmon -d emulator-5555
+$ dashmonx
 ```
 
-You can also use attach command to attach to existing running Flutter instance:
+All arguments are proxied to `flutter run`:
 
 ```
-dashmon attach
+$ dashmonx -d emulator-5555
+$ dashmonx --release
 ```
 
-All arguments are passed like with `run` command
+### Attach mode
 
-
-## FVM support
-
-Dashmon supports [fvm](https://github.com/leoafarias/fvm) out of the box. Assuming that you have `fvm` installed on your computer, to run dashmon using fvm under the hood, just pass `--fvm` to it:
+Attach to an existing Flutter instance:
 
 ```
-$ dashmon --fvm
+$ dashmonx attach
 ```
 
-Suggestions and feedback are welcomed!
+### FVM support
+
+Use [FVM](https://github.com/leoafarias/fvm) with the `--fvm` flag:
+
+```
+$ dashmonx --fvm
+```
+
+## Features over dashmon
+
+### Device picker
+
+When multiple devices are connected, dashmonx shows an interactive picker (just like `flutter run`):
+
+```
+Connected devices:
+[1]: iPhone 15 Pro (XXXXX-XXXXX)
+[2]: Android Emulator (emulator-5554)
+Please choose one (or "q" to quit):
+```
+
+Single keystroke selection - no need to press Enter.
+
+### Watch additional directories
+
+By default, only `./lib` is watched. Add more directories with `--watch`:
+
+```
+$ dashmonx --watch=./packages/shared/lib --watch=./test
+```
+
+### Keyboard shortcuts
+
+- `r` - Hot reload (Flutter)
+- `R` - Hot restart (Flutter)
+- `c` - Clear terminal screen
+- `q` - Quit
