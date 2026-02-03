@@ -74,6 +74,20 @@ class Dashmon {
   }
 
   Future<void> start() async {
+    // Check if flutter/fvm is available
+    final command = _isFvm ? 'fvm' : 'flutter';
+    try {
+      await Process.run(command, ['--version']);
+    } on ProcessException {
+      print('Error: $command is not installed or not in PATH.');
+      if (_isFvm) {
+        print('Install FVM: https://fvm.app/docs/getting_started/installation');
+      } else {
+        print('Install Flutter: https://docs.flutter.dev/get-started/install');
+      }
+      exit(1);
+    }
+
     // Only show device picker if user hasn't specified a device
     if (!_hasDeviceArg) {
       final devices = await getDevices(useFvm: _isFvm);
