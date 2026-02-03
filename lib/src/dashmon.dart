@@ -14,13 +14,16 @@ class Dashmon {
   final List<String> _proxiedArgs = [];
   bool _isFvm = false;
   bool _isAttach = false;
+  bool _hasDeviceArg = false;
 
   Dashmon(this.args) {
     _parseArgs();
   }
 
   void _parseArgs() {
-    for (String arg in args) {
+    for (int i = 0; i < args.length; i++) {
+      final arg = args[i];
+
       if (arg == '--fvm') {
         _isFvm = true;
         continue;
@@ -29,6 +32,11 @@ class Dashmon {
       if (arg == 'attach') {
         _isAttach = true;
         continue;
+      }
+
+      // Check if device is already specified
+      if (arg == '-d' || arg.startsWith('--device-id')) {
+        _hasDeviceArg = true;
       }
 
       _proxiedArgs.add(arg);
@@ -56,18 +64,21 @@ class Dashmon {
   }
 
   Future<void> start() async {
-    final devices = await getDevices(useFvm: _isFvm);
+    // Only show device picker if user hasn't specified a device
+    if (!_hasDeviceArg) {
+      final devices = await getDevices(useFvm: _isFvm);
 
-    if (devices.length > 1) {
-      final selectedDevice = await selectDevice(devices);
+      if (devices.length > 1) {
+        final selectedDevice = await selectDevice(devices);
 
-      if (selectedDevice == null) {
-        print('No device selected.');
-        exit(1);
+        if (selectedDevice == null) {
+          print('No device selected.');
+          exit(1);
+        }
+
+        _proxiedArgs.add('-d');
+        _proxiedArgs.add(selectedDevice.id);
       }
-
-      _proxiedArgs.add('-d');
-      _proxiedArgs.add(selectedDevice.id);
     }
 
     _process = await (_isFvm
