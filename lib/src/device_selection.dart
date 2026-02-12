@@ -27,8 +27,8 @@ Set<String> _getSupportedPlatforms() {
 
 Future<List<Device>> getDevices({bool useFvm = false}) async {
   final result = useFvm
-      ? await Process.run('fvm', ['flutter', 'devices'])
-      : await Process.run('flutter', ['devices']);
+      ? await Process.run('fvm', ['flutter', 'devices'], runInShell: true)
+      : await Process.run('flutter', ['devices'], runInShell: true);
 
   final lines = result.stdout.toString().split('\n');
   final supportedPlatforms = _getSupportedPlatforms();

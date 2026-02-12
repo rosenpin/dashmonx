@@ -77,7 +77,7 @@ class Dashmon {
     // Check if flutter/fvm is available
     final command = _isFvm ? 'fvm' : 'flutter';
     try {
-      await Process.run(command, ['--version']);
+      await Process.run(command, ['--version'], runInShell: true);
     } on ProcessException {
       print('Error: $command is not installed or not in PATH.');
       if (_isFvm) {
@@ -109,9 +109,11 @@ class Dashmon {
 
     _process = await (_isFvm
         ? Process.start(
-            'fvm', ['flutter', _isAttach ? 'attach' : 'run', ..._proxiedArgs])
+            'fvm', ['flutter', _isAttach ? 'attach' : 'run', ..._proxiedArgs],
+            runInShell: true)
         : Process.start(
-            'flutter', [_isAttach ? 'attach' : 'run', ..._proxiedArgs]));
+            'flutter', [_isAttach ? 'attach' : 'run', ..._proxiedArgs],
+            runInShell: true));
 
     _process.stdout.transform(utf8.decoder).forEach(_processLine);
 
