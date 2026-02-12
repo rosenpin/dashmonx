@@ -4,6 +4,10 @@
 
 A CLI tool to run Flutter applications with automatic hot reload on file changes. Fork of [dashmon](https://github.com/erickzanardo/dashmon) with additional features.
 
+
+https://github.com/user-attachments/assets/789e9a96-bca2-4978-bd57-28d6b865fba3
+
+
 ## Install
 
 ```
