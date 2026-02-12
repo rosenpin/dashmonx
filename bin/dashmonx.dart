@@ -1,6 +1,6 @@
 import 'package:dashmonx/dashmonx.dart';
 
-const version = '1.0.1';
+const version = '1.0.2';
 
 const helpText = '''
 Dashmonx - Auto hot reload for Flutter applications

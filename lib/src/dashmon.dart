@@ -140,8 +140,8 @@ class Dashmon {
       ProcessSignal.sigterm.watch().listen((_) => _shutdown());
     }
 
-    stdin.lineMode = false;
     stdin.echoMode = false;
+    stdin.lineMode = false;
     stdin.transform(utf8.decoder).listen((input) {
       if (input == 'c') {
         // Clear terminal screen

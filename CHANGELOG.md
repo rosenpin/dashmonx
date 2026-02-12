@@ -1,3 +1,7 @@
+## [1.0.2]
+
+* Fix stdin terminal mode error on Windows (#1)
+
 ## [1.0.1]
 
 * Fix flutter not being detected on Windows (#1)
