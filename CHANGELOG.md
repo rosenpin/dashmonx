@@ -1,3 +1,9 @@
+## [1.0.3]
+
+* ANSI color output for errors, warnings, and success messages
+* Configurable debounce delay with `--debounce=<ms>` flag (default: 500ms)
+* Improved terminal startup display with version info
+
 ## [1.0.2]
 
 * Fix stdin terminal mode error on Windows (#1)
