@@ -1,3 +1,7 @@
+## [1.0.5]
+
+* Read version dynamically from pubspec.yaml instead of hardcoding
+
 ## [1.0.4]
 
 * Fix Android devices not showing in device picker (platform string matching)

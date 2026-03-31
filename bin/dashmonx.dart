@@ -1,6 +1,24 @@
+import 'dart:io';
+import 'dart:isolate';
+import 'dart:convert';
+
 import 'package:dashmonx/dashmonx.dart';
 
-const version = '1.0.4';
+Future<String> getVersion() async {
+  try {
+    final packageUri = Uri.parse('package:dashmonx/dashmonx.dart');
+    final resolved = await Isolate.resolvePackageUri(packageUri);
+    if (resolved == null) return 'unknown';
+    // resolved points to lib/dashmonx.dart, go up to pubspec.yaml
+    final pubspecFile = File.fromUri(resolved.resolve('../pubspec.yaml'));
+    if (!pubspecFile.existsSync()) return 'unknown';
+    final content = pubspecFile.readAsStringSync();
+    final match = RegExp(r'^version:\s*(.+)$', multiLine: true).firstMatch(content);
+    return match?.group(1)?.trim() ?? 'unknown';
+  } catch (_) {
+    return 'unknown';
+  }
+}
 
 const helpText = '''
 Dashmonx - Auto hot reload for Flutter applications
@@ -32,11 +50,13 @@ Keyboard shortcuts:
 All other arguments are passed directly to flutter run/attach.
 ''';
 
-void main(List<String> args) {
+void main(List<String> args) async {
   if (args.contains('-h') || args.contains('--help')) {
     print(helpText);
     return;
   }
+
+  final version = await getVersion();
 
   if (args.contains('-v') || args.contains('--version')) {
     print('dashmonx $version');

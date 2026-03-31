@@ -1,6 +1,6 @@
 name: dashmonx
 description: A CLI tool to run Flutter applications with automatic hot reload on file changes
-version: 1.0.4
+version: 1.0.5
 homepage: https://github.com/rosenpin/dashmonx
 
 executables:
