@@ -43,8 +43,10 @@ Future<List<Device>> getDevices({bool useFvm = false}) async {
       platform: parts.length > 2 ? parts[2].trim().toLowerCase() : '',
     );
   }).where((device) {
-    // Filter devices to only those supported by the project
-    return supportedPlatforms.contains(device.platform);
+    // Filter devices to only those supported by the project.
+    // Platform strings from `flutter devices` may include architecture
+    // (e.g. "android-arm64"), so check if any supported platform is a prefix.
+    return supportedPlatforms.any((p) => device.platform.startsWith(p));
   }).toList();
 }
 

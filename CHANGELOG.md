@@ -1,3 +1,7 @@
+## [1.0.4]
+
+* Fix Android devices not showing in device picker (platform string matching)
+
 ## [1.0.3]
 
 * ANSI color output for errors, warnings, and success messages
