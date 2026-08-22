@@ -60,6 +60,14 @@ Please choose one (or "q" to quit):
 
 Single keystroke selection - no need to press Enter.
 
+By default, dashmonx only scans for attached devices, including simulators,
+emulators, and desktop or web devices. This avoids waiting for Flutter's slower
+wireless-device discovery. Include wireless devices when needed:
+
+```
+$ dashmonx --include-wireless
+```
+
 ### Watch additional directories
 
 By default, only `./lib` is watched. Add more directories with `--watch`:

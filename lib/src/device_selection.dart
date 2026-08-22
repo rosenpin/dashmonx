@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'colors.dart';
@@ -27,27 +28,71 @@ Set<String> _getSupportedPlatforms() {
   return supported;
 }
 
-Future<List<Device>> getDevices({bool useFvm = false}) async {
+String? _projectPlatformFor(String targetPlatform) {
+  if (targetPlatform == 'ios') return 'ios';
+  if (targetPlatform == 'darwin') return 'macos';
+  if (targetPlatform.startsWith('android')) return 'android';
+  if (targetPlatform.startsWith('web')) return 'web';
+  if (targetPlatform.startsWith('linux')) return 'linux';
+  if (targetPlatform.startsWith('windows')) return 'windows';
+  return null;
+}
+
+Future<List<Device>> getDevices({
+  bool useFvm = false,
+  bool includeWireless = false,
+}) async {
+  final connection = includeWireless ? 'both' : 'attached';
+  final args = [
+    if (useFvm) 'flutter',
+    'devices',
+    '--machine',
+    '--device-connection=$connection',
+  ];
   final result = useFvm
-      ? await Process.run('fvm', ['flutter', 'devices'], runInShell: true)
-      : await Process.run('flutter', ['devices'], runInShell: true);
+      ? await Process.run('fvm', args, runInShell: true)
+      : await Process.run('flutter', args, runInShell: true);
 
-  final lines = result.stdout.toString().split('\n');
-  final supportedPlatforms = _getSupportedPlatforms();
-
-  return lines.where((line) => line.contains('•')).map((line) {
-    final parts = line.split('•');
-    return Device(
-      name: parts[0].trim(),
-      id: parts[1].trim(),
-      platform: parts.length > 2 ? parts[2].trim().toLowerCase() : '',
+  if (result.exitCode != 0) {
+    throw ProcessException(
+      useFvm ? 'fvm' : 'flutter',
+      args,
+      result.stderr.toString().trim(),
+      result.exitCode,
     );
-  }).where((device) {
-    // Filter devices to only those supported by the project.
-    // Platform strings from `flutter devices` may include architecture
-    // (e.g. "android-arm64"), so check if any supported platform is a prefix.
-    return supportedPlatforms.any((p) => device.platform.startsWith(p));
-  }).toList();
+  }
+
+  final supportedPlatforms = _getSupportedPlatforms();
+  final output = jsonDecode(result.stdout.toString());
+  if (output is! List) {
+    throw const FormatException('Unexpected output from flutter devices');
+  }
+
+  final devices = <Device>[];
+  for (final value in output) {
+    if (value is! Map<String, dynamic> || value['isSupported'] == false) {
+      continue;
+    }
+
+    final name = value['name'];
+    final id = value['id'];
+    final targetPlatform = value['targetPlatform'];
+    if (name is! String || id is! String || targetPlatform is! String) {
+      continue;
+    }
+
+    final projectPlatform = _projectPlatformFor(targetPlatform.toLowerCase());
+    if (projectPlatform != null &&
+        supportedPlatforms.contains(projectPlatform)) {
+      devices.add(Device(
+        name: name,
+        id: id,
+        platform: targetPlatform,
+      ));
+    }
+  }
+
+  return devices;
 }
 
 Future<Device?> selectDevice(List<Device> devices) async {
@@ -58,7 +103,8 @@ Future<Device?> selectDevice(List<Device> devices) async {
 
   print(cyan(bold('Connected devices:')));
   for (int i = 0; i < devices.length; i++) {
-    print('  ${cyan('[${i + 1}]')} ${devices[i].name} ${dim('(${devices[i].id})')}');
+    print(
+        '  ${cyan('[${i + 1}]')} ${devices[i].name} ${dim('(${devices[i].id})')}');
   }
 
   stdout.write(dim('Please choose one (or "q" to quit): '));

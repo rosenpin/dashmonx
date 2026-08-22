@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:isolate';
-import 'dart:convert';
 
 import 'package:dashmonx/dashmonx.dart';
 
@@ -13,7 +12,8 @@ Future<String> getVersion() async {
     final pubspecFile = File.fromUri(resolved.resolve('../pubspec.yaml'));
     if (!pubspecFile.existsSync()) return 'unknown';
     final content = pubspecFile.readAsStringSync();
-    final match = RegExp(r'^version:\s*(.+)$', multiLine: true).firstMatch(content);
+    final match =
+        RegExp(r'^version:\s*(.+)$', multiLine: true).firstMatch(content);
     return match?.group(1)?.trim() ?? 'unknown';
   } catch (_) {
     return 'unknown';
@@ -30,6 +30,7 @@ Options:
   -h, --help       Show this help message
   -v, --version    Show version number
   --fvm               Use FVM (Flutter Version Manager)
+  --include-wireless  Include wireless devices during device discovery
   --watch=<dir>       Watch additional directory (can be used multiple times)
   --debounce=<ms>     Set debounce delay in ms (default: 500)
 
@@ -37,6 +38,7 @@ Examples:
   dashmonx                       Run with auto hot reload
   dashmonx -d emulator-5555      Run on specific device
   dashmonx --fvm                 Run using FVM
+  dashmonx --include-wireless    Include attached and wireless devices
   dashmonx attach                Attach to running app
   dashmonx --watch=./test        Also watch test directory
   dashmonx --debounce=200        Faster reload debounce

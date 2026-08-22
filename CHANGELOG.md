@@ -1,3 +1,9 @@
+## [1.0.6]
+
+* Skip wireless device discovery by default for faster startup
+* Add `--include-wireless` to scan attached and wireless devices
+* Use Flutter's machine-readable device output for reliable device selection
+
 ## [1.0.5]
 
 * Read version dynamically from pubspec.yaml instead of hardcoding

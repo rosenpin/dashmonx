@@ -18,6 +18,7 @@ class Dashmon {
   final List<String> _watchDirs = ['./lib'];
   bool _isFvm = false;
   bool _isAttach = false;
+  bool _includeWireless = false;
   bool _hasDeviceArg = false;
   int _debounceMs = 500;
   String? _selectedDeviceName;
@@ -45,6 +46,11 @@ class Dashmon {
 
       if (arg == 'attach') {
         _isAttach = true;
+        continue;
+      }
+
+      if (arg == '--include-wireless') {
+        _includeWireless = true;
         continue;
       }
 
@@ -96,7 +102,10 @@ class Dashmon {
     // Only show device picker if user hasn't specified a device
     if (!_hasDeviceArg) {
       stdout.write(dim('Detecting devices...'));
-      final devices = await getDevices(useFvm: _isFvm);
+      final devices = await getDevices(
+        useFvm: _isFvm,
+        includeWireless: _includeWireless,
+      );
       clearLine();
 
       if (devices.length > 1) {
@@ -112,7 +121,13 @@ class Dashmon {
         _selectedDeviceName = selectedDevice.name;
       } else if (devices.length == 1) {
         _selectedDeviceName = devices[0].name;
+        _proxiedArgs.addAll(['-d', devices[0].id]);
         print('Using ${devices[0].name} ${dim('(${devices[0].id})')}');
+      } else {
+        print(yellow(_includeWireless
+            ? 'No supported devices found.'
+            : 'No attached devices found. Use --include-wireless to also scan for wireless devices.'));
+        exit(1);
       }
     }
 
